@@ -1,6 +1,6 @@
 '''
 Name: Main.py
-Author: Jorge Argueta 
+Author: Jorge Argueta, Blen Bizuwork, Sungwook Hwang
 Class: INST 447
 Descreption: extract data from csv files 
     '''
