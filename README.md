@@ -30,7 +30,7 @@ The data will at least include the following:
     moonface - float
 The objective is to determine patterns in the data to create weather advisory communications 
 We would focus on rainy days and what the weather seems to be around those days. 
-We will use data from 2021 and the first half of 2022 to train our ML model
+We will use data from 2021 and the first half of 2022 to train our ML model to attempt and make a prediction graph
 
 
 ## Data Entry
