@@ -1,3 +1,5 @@
 {
-    "python.formatting.provider": "black"
+    "python.formatting.provider": "black",
+    "python": "python3 -u",
+    "editor.formatOnPaste": false
 }

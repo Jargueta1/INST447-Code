@@ -35,23 +35,50 @@ We will use data from 2021 and the first half of 2022 to train our ML model to a
 
 ## Data Entry
 Data has been obtained using https://www.visualcrossing.com/resources/
+This data source was chosen because of the already formatted data and the comprehensiveness 
 DF will have the following attributes with corresponding data sctructures 
 The first df will be for the year of 2021, the second df will be for the first half of 2022.
 
-## functions (not ML)
-    train_model()
-        Will be use to train out ML model 
-    preditct()
-        Will be used to attempt and predict weather
-    get_Rainy_days()
+## functions -- Not finalize 
+    
+    rainy_days()
         Gets the date for the days that it rained 
+        will return a list containing datetime objects for rainy days 
     rain_streaks()
         Get the streaks of how many days it rained back to back 
-    get_normality()
-        Gets normal values for all of attributes 
-    get_outliers()
-        Gets outlier i.e. values that don't fall in within normality 
+        will return a dictionary with keys for the number of rows that it rained and values will be the days
+    normality()
+        Gets normal values for all of attributes and takes out outliers
+        will return a duple of normal values and outliers 
+    rain_by_month()
+        Will return a summary of rain by months
+            graph of how much it rained each month
+            tier list of how much it rained per month 
+            average rain per month 
+    snow_by_month()
+        Will return a summary of rain by months
+            graph of how much it rained each month
+            tier list of how much it rained per month 
+            average rain per month 
+    wind_by_month()
+        Will return a summary of rain by months
+            graph of how much it rained each month
+            tier list of how much it rained per month 
+            average rain per month 
     
+## ML functions() -- Not finalize 
+    train()
+        will Train the ML model 
+    predict_rain()
+        wil take in values and predict weather or not it will rain 
 
 
+
+## Intructions and requirements for running 
+Pyhon version 3.9 is used 
+The main library wil be Pandas 
+The code will also be run in a virtual anadcoda environment
+
     
+## Current Status 
+We are currently attempting to take out the outliers out of the data.
