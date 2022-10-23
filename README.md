@@ -47,7 +47,7 @@ The first df will be for the year of 2021, the second df will be for the first h
     rain_streaks()
         Get the streaks of how many days it rained back to back 
         will return a dictionary with keys for the number of rows that it rained and values will be the days
-    normality()
+    normalize()
         Gets normal values for all of attributes and takes out outliers
         will return a duple of normal values and outliers 
     rain_by_month()
@@ -81,4 +81,4 @@ The code will also be run in a virtual anadcoda environment
 
     
 ## Current Status 
-We are currently attempting to take out the outliers out of the data.
+need to optimize normalize function
