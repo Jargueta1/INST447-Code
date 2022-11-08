@@ -37,6 +37,9 @@ def normalize(df):
     ## if any data point is an outlier, it movoes the whole column there 
     
     
+    
+    
+    ## Might want to change this to use np. by just getting column names 
     dates_with_outliers = []
     for (columnName, columnData) in df.iteritems():
         
@@ -66,7 +69,6 @@ def normalize(df):
     
     
     for x in dates_with_outliers_normalized:
-        print(x)
         df = df.drop(x)
     
     
