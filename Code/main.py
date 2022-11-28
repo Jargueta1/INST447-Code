@@ -26,33 +26,26 @@ def getData(path):
     for s in data_not_needed:
         df.pop(s)
     
-    
     return df
 
 def normalize(df):
-    
     
     ## checks for outliers 
     ## needs to be optimize
     ## if any data point is an outlier, it movoes the whole column there 
     
-    
-    
-    
     ## Might want to change this to use np. by just getting column names 
     dates_with_outliers = []
-    for (columnName, columnData) in df.iteritems():
+    for (columnName, columnData) in df.items():
         
         mean_1 = np.mean(columnData.values)
         std_1 =np.std(columnData.values)
-        print("checking for outliers in " , columnName, " ...")
         outliers = []
         for y in columnData.values:
             z_score= (y - mean_1)/std_1 
             if float(np.abs(z_score)) > 3:
                 outliers.append(y)
                 dates_with_outliers.append(df.index[df[columnName] == y])
-        print("found ", len(outliers), " outliers")
 
     outlier_dict = {}
     
@@ -63,7 +56,6 @@ def normalize(df):
     dates_with_outliers_normalized = []
     
     for x in dates_with_outliers:
-        
         if x[0] not in dates_with_outliers_normalized:
             dates_with_outliers_normalized.append(x[0])
     
@@ -80,7 +72,6 @@ def normalize(df):
     column_list = []
     data_list = []
 
-    
     for x in list(template_dict.items()):
         index_list.append(x[1]['index'][0])
         column_list.append(x[1]['columns'])
@@ -107,25 +98,25 @@ def normalize(df):
     return df, outliers_df
 
 
+
+def get_rainy_days(df):
+    
+    precip_data = df['precip']
+    
+    ## removes days that did not rain, threshold is 0.1 precipitation
+    for (columnName, columnData) in precip_data.items():
+        if columnData < 0.1:
+            precip_data = precip_data.drop(columnName)
+            
+
 def main(): 
     
-    df_2021_entry = getData("raw_data/Washington,DC,USA 2021-01-01 to 2021-12-31.csv")
-    df_2022_entry = getData("raw_data/Washington,DC,USA 2022-01-01 to 2022-09-30.csv")
+    df_2021_entry = getData("INST447-Code/Code/raw_data/Washington,DC,USA 2021-01-01 to 2021-12-31.csv")
+    df_2022_entry = getData("INST447-Code/Code/raw_data/Washington,DC,USA 2022-01-01 to 2022-09-30.csv")
     
     df_2021_normalize, df_2021_outliers = normalize(df_2021_entry) 
     df_2022_normalize, df_2022_outliers = normalize(df_2022_entry) 
     
-
-    print("###########2021")
-    print(df_2021_normalize.head())
-    
-    print("###########2021entry")
-    print(df_2021_entry.head())
-    
-    print("###########2021outliers")
-    print(df_2021_outliers.head())
-
-    
-    print("done")
+    get_rainy_days(df_2021_normalize)
     
 main()

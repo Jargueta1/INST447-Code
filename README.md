@@ -73,7 +73,6 @@ The first df will be for the year of 2021, the second df will be for the first h
         wil take in values and predict weather or not it will rain 
 
 
-
 ## Intructions and requirements for running 
 Pyhon version 3.9 is used 
 The main library wil be Pandas 
