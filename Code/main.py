@@ -9,7 +9,11 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 
+QUANTITATIV_VALUES = ["tempmax", "tempmin", "temp","feelslikemax", "feelslikemin","feelslike", "dew",  
+"humidity","precip","precipprob","precipcover","snow", "moonphase", "uvindex","solarenergy","solarradiation", "visibility","cloudcover","sealevelpressure","winddir","windspeed","windgust"]
+DATA_NOT_NEEDED = ["name","conditions","description","icon","stations","severerisk","preciptype","sunrise","sunset"]
 
+## Done 
 def getData(path):
     """
     description: takes file path and imports it as a df 
@@ -21,20 +25,24 @@ def getData(path):
     df = df.set_index("datetime")
     
     ## Removing non qualitatitve columns
-    data_not_needed = ["name","conditions","description","icon","stations","severerisk","preciptype","sunrise","sunset"]
-    
-    for s in data_not_needed:
+    ## removed precitype since all of the presitaiton of the data included rain for 2021
+    for s in DATA_NOT_NEEDED:
         df.pop(s)
     
     return df
 
-def normalize(df):
+## Needs to be optimize but is working 
+def clean(df):
+    """
+    description: Takes in a data frame and removes the outliers as well as the errors that it might contain 
+
+    input: data frame 
+    Return : Normilzed Data frame 
+    """
     
-    ## checks for outliers 
+    ## checks for outliers and errors 
     ## needs to be optimize
-    ## if any data point is an outlier, it movoes the whole column there 
-    
-    ## Might want to change this to use np. by just getting column names 
+
     dates_with_outliers = []
     for (columnName, columnData) in df.items():
         
@@ -45,78 +53,38 @@ def normalize(df):
             z_score= (y - mean_1)/std_1 
             if float(np.abs(z_score)) > 3:
                 outliers.append(y)
-                dates_with_outliers.append(df.index[df[columnName] == y])
+                df.drop(df.index[df[columnName] == y])
 
-    outlier_dict = {}
+    return df
     
-    i = 0
-    for i in range(len(dates_with_outliers)):
-        outlier_dict[dates_with_outliers[i][0]] = df.loc[dates_with_outliers[i]].to_dict('split')
-    
-    dates_with_outliers_normalized = []
-    
-    for x in dates_with_outliers:
-        if x[0] not in dates_with_outliers_normalized:
-            dates_with_outliers_normalized.append(x[0])
-    
-    
-    for x in dates_with_outliers_normalized:
-        df = df.drop(x)
-    
-    
-    template_dict = {}    
-    for x in list(outlier_dict.keys()): 
-        template_dict[x] = outlier_dict[x]
 
-    index_list = []
-    column_list = []
-    data_list = []
-
-    for x in list(template_dict.items()):
-        index_list.append(x[1]['index'][0])
-        column_list.append(x[1]['columns'])
-        data_list.append(x[1]['data'])
-    
-    column_list = column_list[0]
-    
-    dict_to_df = {"index": index_list}
-        
-    data_list_chunk = []
-    
-    i = 0 
-    for i in range(len(column_list)):
-        j = 0
-        chunked_list = []
-        for j in range(len(data_list)):
-            chunked_list.append(data_list[j][0][i])
-        dict_to_df[column_list[i]] = chunked_list
-
-    outliers_df = pd.DataFrame.from_dict(dict_to_df)
-    
-    outliers_df = outliers_df.set_index("index")
-
-    return df, outliers_df
-
-
-
+# Done 
 def get_rainy_days(df):
+  
+    i = 0 
     
-    precip_data = df['precip']
+    df = df[df.precip >= 0.1]
     
-    ## removes days that did not rain, threshold is 0.1 precipitation
-    for (columnName, columnData) in precip_data.items():
-        if columnData < 0.1:
-            precip_data = precip_data.drop(columnName)
+    return df 
             
-
 def main(): 
     
-    df_2021_entry = getData("INST447-Code/Code/raw_data/Washington,DC,USA 2021-01-01 to 2021-12-31.csv")
-    df_2022_entry = getData("INST447-Code/Code/raw_data/Washington,DC,USA 2022-01-01 to 2022-09-30.csv")
     
-    df_2021_normalize, df_2021_outliers = normalize(df_2021_entry) 
-    df_2022_normalize, df_2022_outliers = normalize(df_2022_entry) 
     
-    get_rainy_days(df_2021_normalize)
+    df_2021_entry = getData("Code/raw_data/Washington,DC,USA 2021-01-01 to 2021-12-31.csv")
+   
+    #df_2021_normalize, df_2021_outliers = normalize(df_2021_entry) 
+    
+    df_clean = clean(df_2021_entry)
+    
+    rainy_days = get_rainy_days(df_clean)
+
+    
+    for x in QUANTITATIV_VALUES:
+        print("#####################")
+        print(rainy_days[x].describe())
+ 
+    
+    print(rainy_days["precip"].describe())
     
 main()
