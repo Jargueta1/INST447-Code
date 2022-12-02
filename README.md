@@ -41,30 +41,40 @@ The first df will be for the year of 2021, the second df will be for the first h
 
 ## functions -- Not finalize 
     
-    rainy_days()
+    rainy_days() -- Done
         Gets the date for the days that it rained 
         will return a list containing datetime objects for rainy days 
     rain_streaks()
         Get the streaks of how many days it rained back to back 
         will return a dictionary with keys for the number of rows that it rained and values will be the days
-    normalize()
+    normalize() -- done
         Gets normal values for all of attributes and takes out outliers
         will return a duple of normal values and outliers 
-    rain_by_month()
-        Will return a summary of rain by months
-            graph of how much it rained each month
-            tier list of how much it rained per month 
-            average rain per month 
-    snow_by_month()
+    rain_by_month() 
         Will return a summary of rain by months
             graph of how much it rained each month
             tier list of how much it rained per month 
             average rain per month 
     wind_by_month()
-        Will return a summary of rain by months
+        Will return a summary of wind speed  by months
             graph of how much it rained each month
             tier list of how much it rained per month 
             average rain per month 
+    Temperature_by_month()
+       graph of how much it rained each month
+            tier list of how much it rained per month 
+            average rain per month 
+    
+    wind_by_month()
+        Will return a summary of wind speed  by months
+            graph of how much  each month
+            tier list of how much per month 
+            average  per month 
+    solarenergy_by_month()
+        Will return a summary of solarenergy speed  by months
+            graph of how much  each month
+            tier list of how much per month 
+            average  per month 
     
 ## ML functions() -- Not finalize 
     train()
