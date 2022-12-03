@@ -10,8 +10,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 QUANTITATIV_VALUES = ["tempmax", "tempmin", "temp","feelslikemax", "feelslikemin","feelslike", "dew",  
-"humidity","precip","precipprob","precipcover","snow", "moonphase", "uvindex","solarenergy","solarradiation", "visibility","cloudcover","sealevelpressure","winddir","windspeed","windgust"]
-DATA_NOT_NEEDED = ["name","conditions","description","icon","stations","severerisk","preciptype","sunrise","sunset"]
+"humidity","precip","precipcover","snow", "moonphase", "uvindex","solarenergy","solarradiation", "visibility","cloudcover","winddir","windspeed","windgust"]
+
+DATA_NOT_NEEDED = ["name","conditions","description","icon","stations","severerisk","preciptype","sunrise","sunset","sealevelpressure","precipprob"]
 
 def getData(path):
     """
@@ -74,10 +75,7 @@ def by_month_average(df):
 
 
 def by_month_sum(df):
-    
-    df.reset_index(inplace=True)    
-    df.index = pd.to_datetime(df['datetime'],format='%m/%d/%y %I:%M%p')
-    
+      
     return  df.groupby(pd.Grouper(key='datetime',freq='M')).sum()
 
         
@@ -88,16 +86,17 @@ def main():
     df = clean(df) ## cleans out outliers and errors 
     
     df = get_rainy_days(df) ## gets only columns containing rainy days
-
-    
-    for x in QUANTITATIV_VALUES:
-        print("#####################")
-        print(df[x].describe())
  
     df_by_month_average = by_month_average(df)
+    
+    df_by_month_average.plot()
+    plt.show()
+    
     df_by_month_sum = by_month_sum(df)
     
-    print(df_by_month_average.count())
+    df_by_month_sum.plot()
+    plt.show()
+ 
     
     
 main()
