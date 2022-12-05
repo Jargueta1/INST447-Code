@@ -2,7 +2,7 @@
 Name: Main.py
 Author: Jorge Argueta, Blen Bizuwork, Sungwook Hwang
 Class: INST 447
-Descreption: extract data from csv files 
+Descreption: extract weather data from csv and use it to compare different values to levels of precipitation
     '''
 
 import pandas as pd 
@@ -11,9 +11,9 @@ import matplotlib.pyplot as plt
 from sklearn import linear_model
 
 QUANTITATIV_VALUES = ["tempmax", "tempmin", "temp","feelslikemax", "feelslikemin","feelslike", "dew",  
-"humidity","precipcover","snow", "moonphase", "uvindex","solarenergy","solarradiation", "visibility","cloudcover","windspeed"]
+"humidity","precipcover","snow", "moonphase", "uvindex","solarenergy","solarradiation", "visibility","cloudcover","windspeed"] ##This will be the variables that we will comparate with the precipitation amount
 
-DATA_NOT_NEEDED = ["name","conditions","description","icon","stations","severerisk","preciptype","sunrise","sunset","sealevelpressure","precipprob","winddir"]
+DATA_NOT_NEEDED = ["name","conditions","description","icon","stations","severerisk","preciptype","sunrise","sunset","sealevelpressure","precipprob","winddir"] ##This columns will be removed from dataset
 
 def getData(path):
     """
@@ -67,12 +67,11 @@ def get_rainy_days(df):
 
 def by_month_average(df):
     
-    
-    return  df.groupby(pd.Grouper(key='datetime',freq='M')).mean()
+    return  df.groupby(pd.Grouper(key='datetime',freq='M')).mean() ##groups the data points by months and gets the avearge of data points in that month 
 
 def by_month_sum(df):
       
-    return  df.groupby(pd.Grouper(key='datetime',freq='M')).sum()
+    return  df.groupby(pd.Grouper(key='datetime',freq='M')).sum() ##groups the data points by months and gets the sum of data points in that month 
 
 def correlation(df,ind_value):
     '''
@@ -83,23 +82,23 @@ def correlation(df,ind_value):
     return: dictionary with temperature as key and regression value as value 
     '''
     
-    title = ind_value + ' vs temperature'
+    title = ind_value + ' vs temperature' ##creates title based on independent variable 
   
-    x=df[[ind_value]]
-    y = df[['precip']]
+    x=df[[ind_value]] # independent quantitative variable passed down 
+    y = df[['precip']] # level of precipitation 
 
-    df.plot.hexbin(x=ind_value, y='precip', gridsize=20,  title = title);
+    df.plot.hexbin(x=ind_value, y='precip', gridsize=20,  title = title) #plots a graph showing the correlation between the independent variable and the level of precipitation
     plt.show()
 
-    df_by_month_average = by_month_average(df)
+    df_by_month_average = by_month_average(df) ##gets data points grouped by month and gets average of that month 
     
-    by_month_average(df).plot( y=['precip',ind_value ], logy = True ,  title = title );
+    by_month_average(df).plot( y=['precip',ind_value ], logy = True ,  title = title ); # plots the independent variable and precipitation level monthly average for the whole year
     plt.show()
     
-    regr = linear_model.LinearRegression()
-    regr.fit(x,y)
+    regr = linear_model.LinearRegression() # creates a linear regression 
+    regr.fit(x,y) ##determines the regression between the independent variable and the levels of precipitation
 
-    return float("{:.3f}".format( regr.coef_[0][0]))
+    return float("{:.3f}".format( regr.coef_[0][0])) ## retunrs the regression value rounded to three decimal points 
 
 def analysis(df):
     '''
@@ -111,41 +110,47 @@ def analysis(df):
     
     '''
     
-    df_by_month_average = by_month_average(df)
-    
+    ## groups points by month and gets their average and sums and plots them for a general overview 
+    df_by_month_average = by_month_average(df)    
     df_by_month_average.plot(title="Average by Month")
-    
     plt.show()
     
     df_by_month_sum = by_month_sum(df)
-    
     df_by_month_sum.plot(title="Sum by Month")
     plt.show()
     
+    ## dict used to store regression values 
     analysis = {}
     
+    ## conducts analysis for all of the independent variables
     for x in QUANTITATIV_VALUES:
         analysis[x] = correlation(df,x)
     
+    ## creates a dictionary view sorted by value reversely and plots them 
     analysis_view = [ (v,k) for k,v in analysis.items() ]
     analysis_view.sort(reverse=True)
     for v,k in analysis_view:
         print (k,v)
     
     analysis_df = pd.DataFrame.from_dict(analysis, orient='index')
+    ax =  analysis_df.plot(kind="bar") 
     
-    ax =  analysis_df.plot(kind="bar")
-    
+    ## add values to the top of the bar graphs for redeability 
     for p in ax.patches:
         ax.annotate(str(p.get_height()), (p.get_x() * 1.005, p.get_height() * 1.005))
     
     plt.show()
 
-    df.to_csv("Code/processed_data")
-    analysis_df.to_csv("Assignment  Six/revised-Assignment 6 - Data Mall_Customers.csv")
+    # saves dataframes to csv files 
+    df.to_csv("Code/processed_data/processed_data")
+    df_by_month_average.to_csv("Code/processed_data/data_by_month_average")
+    df_by_month_sum.to_csv("Code/processed_data/data_by_month_sum")
+    analysis_df.to_csv("Code/processed_data/regression_data")
 
 def main(): 
     
+    
+    #imports the data
     df = getData("Code/raw_data/Washington,DC,USA 2021-01-01 to 2021-12-31.csv")
     
     df = clean(df) ## cleans out outliers and errors 
@@ -155,9 +160,7 @@ def main():
     df.reset_index(inplace=True)   
     df.index = pd.to_datetime(df['datetime'],format='%m/%d/%y %I:%M%p') ## This is done so that we are able to use group by
  
-    
-    
-    analysis(df)
+    analysis(df) ##runs the analysis
     
     
     
