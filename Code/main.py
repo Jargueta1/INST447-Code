@@ -8,9 +8,10 @@ Descreption: extract data from csv files
 import pandas as pd 
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn import linear_model
 
 QUANTITATIV_VALUES = ["tempmax", "tempmin", "temp","feelslikemax", "feelslikemin","feelslike", "dew",  
-"humidity","precip","precipcover","snow", "moonphase", "uvindex","solarenergy","solarradiation", "visibility","cloudcover","windspeed","windgust"]
+"humidity","precipcover","snow", "moonphase", "uvindex","solarenergy","solarradiation", "visibility","cloudcover","windspeed"]
 
 DATA_NOT_NEEDED = ["name","conditions","description","icon","stations","severerisk","preciptype","sunrise","sunset","sealevelpressure","precipprob","winddir"]
 
@@ -73,154 +74,32 @@ def by_month_sum(df):
       
     return  df.groupby(pd.Grouper(key='datetime',freq='M')).sum()
 
-def temp_rain(df):
+def correlation(df,ind_value):
     '''
     description: Takes in DF, plots and determines the relation ship betwen temperature and rain precipitation 
     
     input: df
     
     return: dictionary with temperature as key and regression value as value 
-    
     '''
-    return 
+    
+    title = ind_value + ' vs temperature'
+  
+    x=df[[ind_value]]
+    y = df[['precip']]
 
-def feelslike_rain(df):
-    '''
-    description: Takes in DF, plots and determines the relation ship betwen feelslike and rain precipitation 
-    
-    input: df
-    
-    return: dictionary with feelslike as key and regression value as value 
-    
-    '''
-    return 
+    df.plot.hexbin(x=ind_value, y='precip', gridsize=20,  title = title);
+    plt.show()
 
-def dew_rain(df):
-    '''
-    description: Takes in DF, plots and determines the relation ship betwen dew and rain precipitation 
+    df_by_month_average = by_month_average(df)
     
-    input: df
+    by_month_average(df).plot( y=['precip',ind_value ], logy = True ,  title = title );
+    plt.show()
     
-    return: dictionary with dew as key and regression value as value 
-    
-    '''
-    return 
+    regr = linear_model.LinearRegression()
+    regr.fit(x,y)
 
-def humidity_rain(df):
-    '''
-    description: Takes in DF, plots and determines the relation ship betwen huminity and rain precipitation 
-    
-    input: df
-    
-    return: dictionary with huminity as key and regression value as value 
-    
-    '''
-    return 
-
-def precipcover_rain(df):
-    '''
-    description: Takes in DF, plots and determines the relation ship betwen precipiration cover and rain precipitation 
-    
-    input: df
-    
-    return: dictionary with temperature as key and precipitation cover value as value 
-    
-    '''
-    return 
-
-def snow_rain(df):
-    '''
-    description: Takes in DF, plots and determines the relation ship betwen snow and rain precipitation 
-    
-    input: df
-    
-    return: dictionary with temperature as key and snow value as value 
-    
-    '''
-    return 
-
-def moonphase_rain(df):
-    '''
-    description: Takes in DF, plots and determines the relation ship betwen moonphase and rain precipitation 
-    
-    input: df
-    
-    return: dictionary with temperature as key and moonphase value as value 
-    
-    '''
-    return 
-def uvindex_rain(df):
-    '''
-    description: Takes in DF, plots and determines the relation ship betwen uvindex and rain precipitation 
-    
-    input: df
-    
-    return: dictionary with temperature as key and uvinex value as value 
-    
-    '''
-    return 
-def solarenergy_rain(df):
-    '''
-    description: Takes in DF, plots and determines the relation ship betwen solar energy and rain precipitation 
-    
-    input: df
-    
-    return: dictionary with temperature as key and solar energy value as value 
-    
-    '''
-    return 
-def solarradiation_rain(df):
-    '''
-    description: Takes in DF, plots and determines the relation ship betwen solar radiation and rain precipitation 
-    
-    input: df
-    
-    return: dictionary with temperature as key and solar radiation value as value 
-    
-    '''
-    return 
-def visibility_rain(df):
-    '''
-    description: Takes in DF, plots and determines the relation ship betwen visibility and rain precipitation 
-    
-    input: df
-    
-    return: dictionary with temperature as key and visibility value as value 
-    
-    '''
-    return 
-def cloudcover_rain(df):
-    '''
-    description: Takes in DF, plots and determines the relation ship betwen cloud cover and rain precipitation 
-    
-    input: df
-    
-    return: dictionary with temperature as key and cloud cover value as value 
-    
-    '''
-    return 
-
-def windspeed_rain(df):
-    '''
-    description: Takes in DF, plots and determines the relation ship betwen wind speed  and rain precipitation 
-    
-    input: df
-    
-    return: dictionary with temperature as key and wind speed  value as value 
-    
-    '''
-    return 
-
-def windgust_rain(df):
-    '''
-    description: Takes in DF, plots and determines the relation ship betwen wind gust  and rain precipitation 
-    
-    input: df
-    
-    return: dictionary with temperature as key and wind gust  value as value 
-    
-    '''
-    return 
+    return float("{:.3f}".format( regr.coef_[0][0]))
 
 def analysis(df):
     '''
@@ -240,10 +119,31 @@ def analysis(df):
     
     df_by_month_sum = by_month_sum(df)
     
-    df_by_month_sum.plot()
+    df_by_month_sum.plot(title="Sum by Month")
     plt.show()
     
+    analysis = {}
     
+    for x in QUANTITATIV_VALUES:
+        analysis[x] = correlation(df,x)
+    
+    analysis_view = [ (v,k) for k,v in analysis.items() ]
+    analysis_view.sort(reverse=True)
+    for v,k in analysis_view:
+        print (k,v)
+    
+    analysis_df = pd.DataFrame.from_dict(analysis, orient='index')
+    
+    ax =  analysis_df.plot(kind="bar")
+    
+    for p in ax.patches:
+        ax.annotate(str(p.get_height()), (p.get_x() * 1.005, p.get_height() * 1.005))
+    
+    plt.show()
+
+    df.to_csv("Code/processed_data")
+    analysis_df.to_csv("Assignment  Six/revised-Assignment 6 - Data Mall_Customers.csv")
+
 def main(): 
     
     df = getData("Code/raw_data/Washington,DC,USA 2021-01-01 to 2021-12-31.csv")
