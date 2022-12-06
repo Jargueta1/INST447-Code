@@ -82,7 +82,7 @@ def correlation(df,ind_value):
     return: dictionary with temperature as key and regression value as value 
     '''
     
-    title = ind_value + ' vs temperature' ##creates title based on independent variable 
+    title = ind_value + ' vs precipitation' ##creates title based on independent variable 
   
     x=df[[ind_value]] # independent quantitative variable passed down 
     y = df[['precip']] # level of precipitation 
